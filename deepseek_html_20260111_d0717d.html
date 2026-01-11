@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2-Week Student Schedule with Weekend Adjustments</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --text-color: #212529;
+            --card-bg: #ffffff;
+            --border-color: #dee2e6;
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --accent-color: #4cc9f0;
+            --sleep-color: #7209b7;
+            --school-color: #3a86ff;
+            --commute-color: #ff9e00;
+            --selfcare-color: #ff006e;
+            --workout-color: #38b000;
+            --dinner-color: #fb5607;
+            --video-color: #8338ec;
+            --outing-color: #06d6a0;
+            --freetime-color: #8ac926;
+        }
+
+        .dark-mode {
+            --bg-color: #121212;
+            --text-color: #e9ecef;
+            --card-bg: #1e1e1e;
+            --border-color: #343a40;
+            --primary-color: #5a7dff;
+            --secondary-color: #4d1cbf;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.2rem;
+        }
+
+        .theme-toggle {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .week-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .week-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .week-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .week-title {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .day-card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .day-header {
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-color);
+            text-align: center;
+        }
+
+        .weekend-header {
+            border-bottom: 2px solid var(--outing-color);
+        }
+
+        .activity-list {
+            list-style-type: none;
+            flex-grow: 1;
+        }
+
+        .activity-item {
+            padding: 10px 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .activity-time {
+            font-weight: 600;
+            font-size: 0.8rem;
+            display: block;
+            margin-top: 3px;
+        }
+
+        .free-time {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: var(--freetime-color);
+            color: #212529;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+            border: 2px dashed rgba(0, 0, 0, 0.2);
+        }
+
+        .video-completed {
+            background-color: #38b000;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-top: 10px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .color-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .video-work-summary {
+            margin-top: 40px;
+            padding: 25px;
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .video-work-summary h3 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .work-phase-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .work-phase-table th, .work-phase-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .work-phase-table th {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary-color);
+        }
+
+        .total-hours {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .video-progress {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: rgba(131, 56, 236, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid var(--video-color);
+        }
+
+        .video-progress h4 {
+            color: var(--video-color);
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 1200px) {
+            .schedule-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .schedule-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .schedule-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .week-navigation {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .legend {
+                flex-direction: column;
+            }
+        }
+
+        /* Activity color classes */
+        .sleep { background-color: var(--sleep-color); color: white; }
+        .school { background-color: var(--school-color); color: white; }
+        .commute { background-color: var(--commute-color); color: white; }
+        .selfcare { background-color: var(--selfcare-color); color: white; }
+        .workout { background-color: var(--workout-color); color: white; }
+        .dinner { background-color: var(--dinner-color); color: white; }
+        .video-work { background-color: var(--video-color); color: white; }
+        .outing { background-color: var(--outing-color); color: #212529; }
+        .freetime { background-color: var(--freetime-color); color: #212529; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-calendar-alt"></i> 2-Week Student Schedule</h1>
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon"></i> Dark Mode
+            </button>
+        </header>
+
+        <div class="week-navigation">
+            <button class="week-btn" id="week1Btn">Week 1</button>
+            <button class="week-btn" id="week2Btn">Week 2</button>
+        </div>
+
+        <div class="video-progress">
+            <h4><i class="fas fa-tasks"></i> Video Work Progress</h4>
+            <p>Total video work required: <strong>25 hours</strong></p>
+            <p>Schedule: <strong>2 hours on weekdays</strong>, <strong>5 hours on weekends</strong></p>
+            <p>Projected completion: <strong>Tuesday of Week 2</strong> (all 25 hours completed)</p>
+        </div>
+
+        <div id="week1" class="week-schedule">
+            <h2 class="week-title">Week 1 Schedule</h2>
+            <div class="schedule-grid" id="week1Grid">
+                <!-- Week 1 days will be generated by JavaScript -->
+            </div>
+        </div>
+
+        <div id="week2" class="week-schedule" style="display: none;">
+            <h2 class="week-title">Week 2 Schedule</h2>
+            <div class="schedule-grid" id="week2Grid">
+                <!-- Week 2 days will be generated by JavaScript -->
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="color-box sleep"></div>
+                <span>Sleep (11:30pm - 7:30am)</span>
+            </div>
+            <div class="legend-item">
+                <div class="color-box school"></div>
+                <span>School (9am - 5:30pm)</span>
+            </div>
+            <div class="legend-item">
+                <div class="color-box commute"></div>
+                <span>Commute (25 mins each way)</span>
+            </div>
+            <div class="legend-item">
+                <div class="color-box selfcare"></div>
+                <span>Self Care (Shower, Skin, Meditation)</span>
+            </div>
+            <div class="legend-item">
+                <div class="color-box workout"></div>
+                <span>Workout (40 mins, 3x/week)</span>
+            </div>
+            <div class="legend-item">
+                <div class="color-box dinner"></div>
+                <span>Dinner (Cook & Eat, 1.5 hours)</span>
+            </div>
+            <div class="legend-item">
+                <div class="color-box video-work"></div>
+                <span>Video Work</span>
+            </div>
+            <div class="legend-item">
+                <div class="color-box outing"></div>
+                <span>Outing in City (Saturday)</span>
+            </div>
+            <div class="legend-item">
+                <div class="color-box freetime"></div>
+                <span>Free Time</span>
+            </div>
+        </div>
+
+        <div class="video-work-summary">
+            <h3><i class="fas fa-video"></i> Video Work Breakdown (25 hours total per video)</h3>
+            <table class="work-phase-table">
+                <thead>
+                    <tr>
+                        <th>Phase</th>
+                        <th>Hours</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Research & Scripting</td>
+                        <td>8</td>
+                        <td>Topic research, outline, full script with character dialogue</td>
+                    </tr>
+                    <tr>
+                        <td>Voice Recording</td>
+                        <td>2</td>
+                        <td>Record Benson + reactive character (grunts, reactions)</td>
+                    </tr>
+                    <tr>
+                        <td>Basic Animation</td>
+                        <td>10</td>
+                        <td>Character talking heads, simple cutaways, pop-up text, image inserts</td>
+                    </tr>
+                    <tr>
+                        <td>Editing & Sound</td>
+                        <td>4</td>
+                        <td>Sync audio/animation, background music, sound effects, final polish</td>
+                    </tr>
+                    <tr>
+                        <td>Thumbnail & Upload</td>
+                        <td>1</td>
+                        <td>Create thumbnail, write description, tags, upload/schedule</td>
+                    </tr>
+                    <tr class="total-hours">
+                        <td>TOTAL per video</td>
+                        <td>25h</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            
+            if (document.body.classList.contains('dark-mode')) {
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+            } else {
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+            }
+        });
+
+        // Week navigation functionality
+        const week1Btn = document.getElementById('week1Btn');
+        const week2Btn = document.getElementById('week2Btn');
+        const week1 = document.getElementById('week1');
+        const week2 = document.getElementById('week2');
+
+        week1Btn.addEventListener('click', () => {
+            week1.style.display = 'block';
+            week2.style.display = 'none';
+            week1Btn.style.backgroundColor = 'var(--secondary-color)';
+            week2Btn.style.backgroundColor = 'var(--primary-color)';
+        });
+
+        week2Btn.addEventListener('click', () => {
+            week1.style.display = 'none';
+            week2.style.display = 'block';
+            week1Btn.style.backgroundColor = 'var(--primary-color)';
+            week2Btn.style.backgroundColor = 'var(--secondary-color)';
+        });
+
+        // Set initial week button state
+        week1Btn.style.backgroundColor = 'var(--secondary-color)';
+
+        // Days of the week
+        const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        
+        // Video work hours tracking
+        let totalVideoHours = 0;
+        const videoHoursPerDay = {};
+        
+        // Calculate video hours with completion by Tuesday of Week 2
+        function calculateVideoHours() {
+            const targetCompletionDay = 8; // Tuesday of Week 2 (day 8 in 14-day schedule)
+            const totalNeeded = 25;
+            let remaining = totalNeeded;
+            
+            // Weekday hours: 2, Weekend hours: 5
+            for (let day = 0; day < 14; day++) {
+                const dayName = weekDays[day % 7];
+                const isWeekend = (dayName === 'Saturday' || dayName === 'Sunday');
+                
+                // Stop adding hours once we've reached the target
+                if (remaining <= 0) {
+                    videoHoursPerDay[day] = 0;
+                    continue;
+                }
+                
+                // Calculate hours for this day
+                let hoursForDay = isWeekend ? 5 : 2;
+                
+                // If this is the completion day, only add what's needed to reach 25
+                if (day === targetCompletionDay) {
+                    hoursForDay = Math.min(hoursForDay, remaining);
+                } else if (day > targetCompletionDay) {
+                    hoursForDay = 0;
+                }
+                
+                // If adding full day would exceed total, reduce to remaining needed
+                if (hoursForDay > remaining) {
+                    hoursForDay = remaining;
+                }
+                
+                videoHoursPerDay[day] = hoursForDay;
+                remaining -= hoursForDay;
+            }
+            
+            return videoHoursPerDay;
+        }
+
+        // Calculate free time based on activities
+        function calculateFreeTime(dayName, dayIndex, hasWorkout, hasOuting, videoHours, isWeekend) {
+            // Fixed time commitments in minutes
+            const sleep = 8 * 60; // 8 hours
+            const morningRoutine = 30; // 15 min skin + 5 min meditation + breakfast (assume 10 min)
+            
+            let totalUsed = sleep + morningRoutine;
+            
+            // Weekday vs weekend activities
+            if (!isWeekend) {
+                // Weekday schedule
+                const commute = 25 * 2; // to and from school
+                const school = 8.5 * 60; // 9am to 5:30pm
+                const shower = (dayName === 'Wednesday' || dayName === 'Saturday') ? 30 : 10;
+                const workout = hasWorkout ? 40 : 0;
+                const dinner = 1.5 * 60; // 1.5 hours
+                
+                totalUsed += commute + school + shower + workout + dinner;
+            } else {
+                // Weekend schedule
+                const shower = (dayName === 'Saturday') ? 30 : 10; // Saturday 30 mins, Sunday 10 mins
+                const workout = (dayName === 'Sunday') ? 40 : 0; // Sunday workout
+                const dinner = 1.5 * 60; // 1.5 hours
+                const outing = (dayName === 'Saturday') ? 3 * 60 : 0; // Saturday outing 3 hours
+                
+                totalUsed += shower + workout + dinner + outing;
+            }
+            
+            // Video work in minutes
+            const videoWork = videoHours * 60;
+            totalUsed += videoWork;
+            
+            // Total minutes in a day
+            const totalMinutes = 24 * 60;
+            
+            // Free time remaining
+            const freeTime = totalMinutes - totalUsed;
+            
+            return {
+                freeMinutes: freeTime,
+                freeHours: Math.floor(freeTime / 60),
+                freeMinutesRemainder: freeTime % 60
+            };
+        }
+
+        // Get appropriate icon for each activity
+        function getActivityIcon(activityName) {
+            const iconMap = {
+                'Sleep': 'bed',
+                'Morning Routine': 'sun',
+                'Morning Routine + Breakfast': 'coffee',
+                'Commute to School': 'bus',
+                'Commute Back': 'bus',
+                'School': 'graduation-cap',
+                'Evening Shower': 'shower',
+                'Workout': 'dumbbell',
+                'Cook & Eat Dinner': 'utensils',
+                'Video Work': 'video',
+                'Outing in the City': 'city'
+            };
+            
+            return iconMap[activityName] || 'calendar-day';
+        }
+
+        // Generate weekday card (Monday-Friday)
+        function generateWeekdayCard(dayName, dayIndex) {
+            const dayCard = document.createElement('div');
+            dayCard.className = 'day-card';
+            
+            const dayHeader = document.createElement('div');
+            dayHeader.className = 'day-header';
+            dayHeader.textContent = dayName;
+            dayCard.appendChild(dayHeader);
+            
+            const activityList = document.createElement('ul');
+            activityList.className = 'activity-list';
+            
+            // Sleep
+            const sleepItem = document.createElement('li');
+            sleepItem.className = 'activity-item sleep';
+            sleepItem.innerHTML = `
+                <i class="fas fa-bed"></i>
+                <div>
+                    Sleep
+                    <div class="activity-time">11:30pm - 7:30am (8 hours)</div>
+                </div>
+            `;
+            activityList.appendChild(sleepItem);
+            
+            // Morning Routine
+            const morningItem = document.createElement('li');
+            morningItem.className = 'activity-item selfcare';
+            morningItem.innerHTML = `
+                <i class="fas fa-sun"></i>
+                <div>
+                    Morning Routine
+                    <div class="activity-time">7:30am - 7:50am (15 min skin + 5 min meditation)</div>
+                </div>
+            `;
+            activityList.appendChild(morningItem);
+            
+            // Commute to School
+            const commuteToItem = document.createElement('li');
+            commuteToItem.className = 'activity-item commute';
+            commuteToItem.innerHTML = `
+                <i class="fas fa-bus"></i>
+                <div>
+                    Commute to School
+                    <div class="activity-time">8:35am - 9:00am (25 mins)</div>
+                </div>
+            `;
+            activityList.appendChild(commuteToItem);
+            
+            // School
+            const schoolItem = document.createElement('li');
+            schoolItem.className = 'activity-item school';
+            schoolItem.innerHTML = `
+                <i class="fas fa-graduation-cap"></i>
+                <div>
+                    School
+                    <div class="activity-time">9:00am - 5:30pm (8.5 hours)</div>
+                </div>
+            `;
+            activityList.appendChild(schoolItem);
+            
+            // Commute Back
+            const commuteBackItem = document.createElement('li');
+            commuteBackItem.className = 'activity-item commute';
+            commuteBackItem.innerHTML = `
+                <i class="fas fa-bus"></i>
+                <div>
+                    Commute Back
+                    <div class="activity-time">5:30pm - 5:55pm (25 mins)</div>
+                </div>
+            `;
+            activityList.appendChild(commuteBackItem);
+            
+            // Evening Shower (10 mins daily, 30 mins on Wed)
+            let showerDuration = '10 mins';
+            if (dayName === 'Wednesday') {
+                showerDuration = '30 mins';
+            }
+            
+            const showerItem = document.createElement('li');
+            showerItem.className = 'activity-item selfcare';
+            showerItem.innerHTML = `
+                <i class="fas fa-shower"></i>
+                <div>
+                    Evening Shower
+                    <div class="activity-time">${showerDuration}</div>
+                </div>
+            `;
+            activityList.appendChild(showerItem);
+            
+            // Add workout on Tue, Thu
+            const hasWorkout = (dayName === 'Tuesday' || dayName === 'Thursday');
+            if (hasWorkout) {
+                const workoutItem = document.createElement('li');
+                workoutItem.className = 'activity-item workout';
+                workoutItem.innerHTML = `
+                    <i class="fas fa-dumbbell"></i>
+                    <div>
+                        Workout
+                        <div class="activity-time">40 mins</div>
+                    </div>
+                `;
+                activityList.appendChild(workoutItem);
+            }
+            
+            // Dinner
+            const dinnerItem = document.createElement('li');
+            dinnerItem.className = 'activity-item dinner';
+            dinnerItem.innerHTML = `
+                <i class="fas fa-utensils"></i>
+                <div>
+                    Cook & Eat Dinner
+                    <div class="activity-time">1.5 hours (before 8pm)</div>
+                </div>
+            `;
+            activityList.appendChild(dinnerItem);
+            
+            // Add video work
+            const videoHours = videoHoursPerDay[dayIndex];
+            if (videoHours > 0) {
+                const videoItem = document.createElement('li');
+                videoItem.className = 'activity-item video-work';
+                videoItem.innerHTML = `
+                    <i class="fas fa-video"></i>
+                    <div>
+                        Video Work
+                        <div class="activity-time">${videoHours} hours</div>
+                    </div>
+                `;
+                activityList.appendChild(videoItem);
+            }
+            
+            dayCard.appendChild(activityList);
+            
+            // Calculate and display free time
+            const freeTime = calculateFreeTime(dayName, dayIndex, hasWorkout, false, videoHours, false);
+            
+            const freeTimeDiv = document.createElement('div');
+            freeTimeDiv.className = 'free-time';
+            if (freeTime.freeMinutes < 0) {
+                freeTimeDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Schedule Overload!`;
+                freeTimeDiv.style.backgroundColor = '#ff595e';
+            } else if (freeTime.freeHours > 0 || freeTime.freeMinutesRemainder > 0) {
+                freeTimeDiv.innerHTML = `
+                    <i class="fas fa-clock"></i> Free Time: 
+                    ${freeTime.freeHours > 0 ? `${freeTime.freeHours} hours ` : ''}
+                    ${freeTime.freeMinutesRemainder > 0 ? `${freeTime.freeMinutesRemainder} minutes` : ''}
+                `;
+            } else {
+                freeTimeDiv.innerHTML = `<i class="fas fa-clock"></i> No Free Time Today`;
+            }
+            
+            dayCard.appendChild(freeTimeDiv);
+            
+            return dayCard;
+        }
+
+        // Generate Saturday card
+        function generateSaturdayCard(dayName, dayIndex) {
+            const dayCard = document.createElement('div');
+            dayCard.className = 'day-card';
+            
+            const dayHeader = document.createElement('div');
+            dayHeader.className = 'day-header weekend-header';
+            dayHeader.textContent = dayName;
+            dayCard.appendChild(dayHeader);
+            
+            const activityList = document.createElement('ul');
+            activityList.className = 'activity-list';
+            
+            // Sleep
+            const sleepItem = document.createElement('li');
+            sleepItem.className = 'activity-item sleep';
+            sleepItem.innerHTML = `
+                <i class="fas fa-bed"></i>
+                <div>
+                    Sleep
+                    <div class="activity-time">11:30pm - 7:30am (8 hours)</div>
+                </div>
+            `;
+            activityList.appendChild(sleepItem);
+            
+            // Morning Routine + Breakfast
+            const morningItem = document.createElement('li');
+            morningItem.className = 'activity-item selfcare';
+            morningItem.innerHTML = `
+                <i class="fas fa-coffee"></i>
+                <div>
+                    Morning Routine + Breakfast
+                    <div class="activity-time">7:30am - 8:00am (15 min skin + 5 min meditation)</div>
+                </div>
+            `;
+            activityList.appendChild(morningItem);
+            
+            // Video Work (morning session)
+            const videoHours = videoHoursPerDay[dayIndex];
+            if (videoHours > 0) {
+                const videoItem = document.createElement('li');
+                videoItem.className = 'activity-item video-work';
+                videoItem.innerHTML = `
+                    <i class="fas fa-video"></i>
+                    <div>
+                        Video Work
+                        <div class="activity-time">8:00am - 1:00pm (5 hours)</div>
+                    </div>
+                `;
+                activityList.appendChild(videoItem);
+            }
+            
+            // Outing in the City
+            const outingItem = document.createElement('li');
+            outingItem.className = 'activity-item outing';
+            outingItem.innerHTML = `
+                <i class="fas fa-city"></i>
+                <div>
+                    Outing in the City
+                    <div class="activity-time">1:00pm - 4:00pm (3 hours)</div>
+                </div>
+            `;
+            activityList.appendChild(outingItem);
+            
+            // Evening Shower (30 mins on Saturday)
+            const showerItem = document.createElement('li');
+            showerItem.className = 'activity-item selfcare';
+            showerItem.innerHTML = `
+                <i class="fas fa-shower"></i>
+                <div>
+                    Evening Shower
+                    <div class="activity-time">4:00pm - 4:30pm (30 mins)</div>
+                </div>
+            `;
+            activityList.appendChild(showerItem);
+            
+            // Dinner
+            const dinnerItem = document.createElement('li');
+            dinnerItem.className = 'activity-item dinner';
+            dinnerItem.innerHTML = `
+                <i class="fas fa-utensils"></i>
+                <div>
+                    Cook & Eat Dinner
+                    <div class="activity-time">6:30pm - 8:00pm (1.5 hours)</div>
+                </div>
+            `;
+            activityList.appendChild(dinnerItem);
+            
+            dayCard.appendChild(activityList);
+            
+            // Calculate and display free time (Saturday)
+            const freeTime = calculateFreeTime(dayName, dayIndex, false, true, videoHours, true);
+            
+            const freeTimeDiv = document.createElement('div');
+            freeTimeDiv.className = 'free-time';
+            if (freeTime.freeMinutes < 0) {
+                freeTimeDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Schedule Overload!`;
+                freeTimeDiv.style.backgroundColor = '#ff595e';
+            } else if (freeTime.freeHours > 0 || freeTime.freeMinutesRemainder > 0) {
+                freeTimeDiv.innerHTML = `
+                    <i class="fas fa-clock"></i> Free Time: 
+                    ${freeTime.freeHours > 0 ? `${freeTime.freeHours} hours ` : ''}
+                    ${freeTime.freeMinutesRemainder > 0 ? `${freeTime.freeMinutesRemainder} minutes` : ''}
+                `;
+            } else {
+                freeTimeDiv.innerHTML = `<i class="fas fa-clock"></i> No Free Time Today`;
+            }
+            
+            dayCard.appendChild(freeTimeDiv);
+            
+            return dayCard;
+        }
+
+        // Generate Sunday card
+        function generateSundayCard(dayName, dayIndex) {
+            const dayCard = document.createElement('div');
+            dayCard.className = 'day-card';
+            
+            const dayHeader = document.createElement('div');
+            dayHeader.className = 'day-header weekend-header';
+            dayHeader.textContent = dayName;
+            dayCard.appendChild(dayHeader);
+            
+            const activityList = document.createElement('ul');
+            activityList.className = 'activity-list';
+            
+            // Sleep
+            const sleepItem = document.createElement('li');
+            sleepItem.className = 'activity-item sleep';
+            sleepItem.innerHTML = `
+                <i class="fas fa-bed"></i>
+                <div>
+                    Sleep
+                    <div class="activity-time">11:30pm - 7:30am (8 hours)</div>
+                </div>
+            `;
+            activityList.appendChild(sleepItem);
+            
+            // Morning Routine + Breakfast
+            const morningItem = document.createElement('li');
+            morningItem.className = 'activity-item selfcare';
+            morningItem.innerHTML = `
+                <i class="fas fa-coffee"></i>
+                <div>
+                    Morning Routine + Breakfast
+                    <div class="activity-time">7:30am - 8:00am (15 min skin + 5 min meditation)</div>
+                </div>
+            `;
+            activityList.appendChild(morningItem);
+            
+            // Video Work (morning session)
+            const videoHours = videoHoursPerDay[dayIndex];
+            if (videoHours > 0) {
+                const videoItem = document.createElement('li');
+                videoItem.className = 'activity-item video-work';
+                videoItem.innerHTML = `
+                    <i class="fas fa-video"></i>
+                    <div>
+                        Video Work
+                        <div class="activity-time">8:00am - 1:00pm (5 hours)</div>
+                    </div>
+                `;
+                activityList.appendChild(videoItem);
+            }
+            
+            // Workout on Sunday
+            const workoutItem = document.createElement('li');
+            workoutItem.className = 'activity-item workout';
+            workoutItem.innerHTML = `
+                <i class="fas fa-dumbbell"></i>
+                <div>
+                    Workout
+                    <div class="activity-time">3:20pm - 4:00pm (40 mins)</div>
+                </div>
+            `;
+            activityList.appendChild(workoutItem);
+            
+            // Evening Shower (10 mins on Sunday)
+            const showerItem = document.createElement('li');
+            showerItem.className = 'activity-item selfcare';
+            showerItem.innerHTML = `
+                <i class="fas fa-shower"></i>
+                <div>
+                    Evening Shower
+                    <div class="activity-time">4:00pm - 4:10pm (10 mins)</div>
+                </div>
+            `;
+            activityList.appendChild(showerItem);
+            
+            // Dinner
+            const dinnerItem = document.createElement('li');
+            dinnerItem.className = 'activity-item dinner';
+            dinnerItem.innerHTML = `
+                <i class="fas fa-utensils"></i>
+                <div>
+                    Cook & Eat Dinner
+                    <div class="activity-time">6:30pm - 8:00pm (1.5 hours)</div>
+                </div>
+            `;
+            activityList.appendChild(dinnerItem);
+            
+            dayCard.appendChild(activityList);
+            
+            // Calculate and display free time (Sunday)
+            const freeTime = calculateFreeTime(dayName, dayIndex, true, false, videoHours, true);
+            
+            const freeTimeDiv = document.createElement('div');
+            freeTimeDiv.className = 'free-time';
+            if (freeTime.freeMinutes < 0) {
+                freeTimeDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Schedule Overload!`;
+                freeTimeDiv.style.backgroundColor = '#ff595e';
+            } else if (freeTime.freeHours > 0 || freeTime.freeMinutesRemainder > 0) {
+                freeTimeDiv.innerHTML = `
+                    <i class="fas fa-clock"></i> Free Time: 
+                    ${freeTime.freeHours > 0 ? `${freeTime.freeHours} hours ` : ''}
+                    ${freeTime.freeMinutesRemainder > 0 ? `${freeTime.freeMinutesRemainder} minutes` : ''}
+                `;
+            } else {
+                freeTimeDiv.innerHTML = `<i class="fas fa-clock"></i> No Free Time Today`;
+            }
+            
+            dayCard.appendChild(freeTimeDiv);
+            
+            return dayCard;
+        }
+
+        // Calculate video hours first
+        calculateVideoHours();
+        
+        // Generate schedule for both weeks
+        const week1Grid = document.getElementById('week1Grid');
+        const week2Grid = document.getElementById('week2Grid');
+        
+        // Week 1 (days 0-6)
+        for (let i = 0; i < 7; i++) {
+            const dayName = weekDays[i];
+            
+            if (dayName === 'Saturday') {
+                week1Grid.appendChild(generateSaturdayCard(dayName, i));
+            } else if (dayName === 'Sunday') {
+                week1Grid.appendChild(generateSundayCard(dayName, i));
+            } else {
+                week1Grid.appendChild(generateWeekdayCard(dayName, i));
+            }
+            
+            totalVideoHours += videoHoursPerDay[i];
+        }
+        
+        // Week 2 (days 7-13)
+        for (let i = 7; i < 14; i++) {
+            const dayName = weekDays[i % 7];
+            
+            if (dayName === 'Saturday') {
+                week2Grid.appendChild(generateSaturdayCard(dayName, i));
+            } else if (dayName === 'Sunday') {
+                week2Grid.appendChild(generateSundayCard(dayName, i));
+            } else {
+                week2Grid.appendChild(generateWeekdayCard(dayName, i));
+            }
+            
+            totalVideoHours += videoHoursPerDay[i];
+            
+            // Show video completion message on Tuesday of Week 2
+            if (dayName === 'Tuesday' && i === 8) {
+                const tuesdayCard = week2Grid.lastChild;
+                const completedDiv = document.createElement('div');
+                completedDiv.className = 'video-completed';
+                completedDiv.innerHTML = `<i class="fas fa-check-circle"></i> VIDEO COMPLETED TODAY!`;
+                tuesdayCard.appendChild(completedDiv);
+            }
+        }
+
+        // Add some initial styling to make it more visually appealing
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add subtle animation to day cards
+            const dayCards = document.querySelectorAll('.day-card');
+            dayCards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.05}s`;
+                card.style.animation = 'fadeIn 0.5s ease-out forwards';
+            });
+        });
+    </script>
+</body>
+</html>
